@@ -13,8 +13,10 @@
 
 ## Demo
 執行範例
-<img src="multithreading _images/normal_calc.png" width="300">
-<img src="multithreading _images/bignum_calc.png" width="300">
+
+<img src="multithreading _images/normal_calc.png" width="800">
+
+<img src="multithreading _images/bignum_calc.png" width="800">
 
 ## System Architecture & Algorithm
 
