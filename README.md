@@ -9,27 +9,34 @@
 
 本專案重點在於**執行緒生命週期管理 (Thread Lifecycle Management)**、**無 IPC 的資料回傳機制**，以及支援高達 25 位數之**大數運算 (Big Integer Computation)**。
 
+[完整題目](./1132-cs305-prog2.pdf)
+
+## Demo
+執行範例
+<img src="multithreading_images/小數運算.png" width="250">
+<img src="multithreading_images/大數運算.png" width="250">
+
 ## System Architecture & Algorithm
 
-系統架構由單一 Main Thread 與兩個 Work Threads 構成：
+*   **執行緒生命週期與同步：** Main thread 負責讀取檔案並生成兩個 Work threads。內部實作 `pthread_mutex_t` 與 `pthread_cond_t`，確保 Thread 1 必然於 Thread 2 之前完成輸出，避免 I/O 競爭 (Race Condition)。
+*   **大數並行運算：** 透過 C++ GMP 封裝庫 (`<gmpxx.h>`)，突破標準整數限制，支援高達 25 位數之運算，且支援負數運算結果。
+*   **嚴謹的例外處理 (Robustness)：** 內建多重防呆機制，包含：排除運算式空格、攔截不合法字元、檢查不成對括號，以及防止除以零之錯誤。
+*   **精準效能量測：** 運用時鐘函數精準計算各執行緒之 Wall time (實際消逝時間)，並擴充至小數點下兩位數以利進行微秒級效能比較。
 
-1.  **Main Thread (調度與監控)：**
-    *   負責讀取輸入檔案，解析 Infix 運算式。
-    *   動態生成 (Spawn) 兩個子執行緒 (`pthread_create`)。
-    *   回收資源 (`pthread_join`) 並接收子執行緒回傳的執行時間數據，最後進行系統效能分析 (Wall time量測)。
-2.  **Work Thread 1 (Prefix 解析器)：**
-    *   將 Infix 運算式轉換為 Prefix 形式，處理括號優先級與 associativity (如 left-to-right 運算)。
-    *   實作 25 位數的大數運算器進行精準計算，處理異常錯誤並回傳執行時間 (ms)。
-3.  **Work Thread 2 (Postfix 解析器)：**
-    *   將 Infix 運算式轉換為 Postfix 形式並進行大數運算，量測並回傳獨立的執行效能。
+## Environment & Usage
+本專案於 Windows Subsystem for Linux (WSL) 環境下使用 VS Code 開發。
 
-## Usage
-
-本專案開發與測試環境為 Ubuntu 24.04+ (64-bit)，並使用 g++ (13.2+) 編譯。
-
+### 1. 安裝依賴函式庫 (GMP)
 ```bash
-# 1. 編譯程式碼 (必須連結 pthread 函式庫)
-g++ -o prog2 main.cpp -lpthread
+#支援大數運算
+sudo apt-get update
+sudo apt install libgmp-dev libgmpxx41dbl
+```
 
-# 2. 執行程式 (傳入資料檔名)
-./prog2 prog2data.txt
+### 2. 編譯執行
+```bash
+#編譯
+g++ prog2.cpp -lgmpxx -lgmp -lpthread -o prog2  //-lgmpxx 是 GMP 的 C++ 封裝函式庫 
+#執行
+echo "1+2*4+(7-5)/2" > prog2.data  //建立 prog2.data檔案
+./prog2 prog2.data  //執行
