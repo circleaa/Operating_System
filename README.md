@@ -40,8 +40,11 @@ g++ prog2.cpp -lgmpxx -lgmp -lpthread -o prog2  //-lgmpxx 是 GMP 的 C++ 封裝
 #執行
 echo "1+2*4+(7-5)/2" > prog2.data  //建立 prog2.data檔案
 ./prog2 prog2.data  //執行
+```
 
 ## Source Code
+[完整程式碼](./prog2.cpp)
+
 ```cpp
 #include <iostream>      // 基本輸出入功能
 #include <fstream>       // 檔案讀取用
